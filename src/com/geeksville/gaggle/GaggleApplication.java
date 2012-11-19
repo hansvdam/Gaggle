@@ -49,7 +49,8 @@ import de.mindpipe.android.logging.log4j.LogConfigurator;
  * @author kevinh
  * 
  */
-@ReportsCrashes(formKey = "dFRteC1NYnlvMXBNOUhMbWJhNXFDdVE6MQ", mode = ReportingInteractionMode.TOAST, forceCloseDialogAfterToast = false, resToastText = R.string.crashToastText)
+// nice crashreporting with ACRA, but disabled, because it's my personal google-docs-spreadsheet this is reporting to (says: hansvdam):
+//@ReportsCrashes(formKey = "dFRteC1NYnlvMXBNOUhMbWJhNXFDdVE6MQ", mode = ReportingInteractionMode.TOAST, forceCloseDialogAfterToast = false, resToastText = R.string.crashToastText)
 public class GaggleApplication extends Application {
 
 	/**
@@ -101,8 +102,10 @@ public class GaggleApplication extends Application {
 	    ACRA.init(this);
 		super.onCreate();
 		setupLogger();
-		FlurryAgent.setCaptureUncaughtExceptions(false);
-		FlurryAgent.setReportLocation(true);
+		if (GagglePrefs.getInstance().isFlurryEnabled()){
+			FlurryAgent.setCaptureUncaughtExceptions(false);
+			FlurryAgent.setReportLocation(true);
+		}
 	}
 
 
