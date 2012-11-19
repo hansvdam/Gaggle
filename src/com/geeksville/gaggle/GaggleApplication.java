@@ -20,11 +20,19 @@
  ******************************************************************************/
 package com.geeksville.gaggle;
 
+import java.io.File;
+
+import org.acra.ACRA;
+import org.acra.ReportingInteractionMode;
+import org.acra.annotation.ReportsCrashes;
+import org.apache.log4j.Level;
+
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
+import android.os.Environment;
 import android.widget.Toast;
 
 import com.flurry.android.FlurryAgent;
@@ -33,12 +41,15 @@ import com.geeksville.location.GPSToPositionWriter;
 import com.geeksville.location.LocationLogDbAdapter;
 import com.geeksville.location.WaypointDB;
 
+import de.mindpipe.android.logging.log4j.LogConfigurator;
+
 /**
  * A container for shared app state
  * 
  * @author kevinh
  * 
  */
+@ReportsCrashes(formKey = "dFRteC1NYnlvMXBNOUhMbWJhNXFDdVE6MQ", mode = ReportingInteractionMode.TOAST, forceCloseDialogAfterToast = false, resToastText = R.string.crashToastText)
 public class GaggleApplication extends Application {
 
 	/**
@@ -52,6 +63,12 @@ public class GaggleApplication extends Application {
 	private WaypointDB waypoints = null;
 
 	private GPSToPositionWriter gpsToPos;
+
+    private static GaggleApplication instance;
+
+    public static Context getContext() {
+        return instance;
+    }
 
 	public synchronized WaypointDB getWaypoints() {
 		// FIXME, close the backing DB when the waypoint cache is done with it
@@ -69,6 +86,7 @@ public class GaggleApplication extends Application {
 	}
 
 	public GaggleApplication() {
+	    instance = this;
 		gpsToPos = new GPSToPositionWriter(this);
 	}
 
@@ -80,16 +98,25 @@ public class GaggleApplication extends Application {
 	@Override
 	public void onCreate() {
 		// TODO Auto-generated method stub
+	    ACRA.init(this);
 		super.onCreate();
-		
-		GagglePrefs prefs = new GagglePrefs(this);
-		if (prefs.isFlurryEnabled()){
-		  FlurryAgent.setCaptureUncaughtExceptions(false);
-		  FlurryAgent.setReportLocation(true);
-		}
+		setupLogger();
+		FlurryAgent.setCaptureUncaughtExceptions(false);
+		FlurryAgent.setReportLocation(true);
 	}
 
-	/**
+
+    private void setupLogger() {
+        final LogConfigurator logConfigurator = new LogConfigurator();
+        
+        logConfigurator.setUseLogCatAppender(true);
+        logConfigurator.setFileName(Environment.getExternalStorageDirectory() + File.separator + "gaggle.log");
+        logConfigurator.setRootLevel(Level.DEBUG);
+        // Set log level of a specific logger
+        logConfigurator.configure();
+    }
+
+    /**
 	 * Once our main GUI goes away, they call this, to ensure our service isn't
 	 * left needlessly running
 	 */

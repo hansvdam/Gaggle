@@ -15,7 +15,7 @@ import com.geeksville.android.LifeCyclePublisherImpl;
 import com.geeksville.gaggle.GagglePrefs;
 import com.geeksville.gaggle.R;
 import com.geeksville.maps.CenteredMyLocationOverlay;
-import com.geeksville.maps.GeeksvilleMapView;
+import com.geeksville.maps.GeeksvilleMapViewOld;
 import com.geeksville.util.GaggleUncaughtExceptionHandler;
 
 import android.os.Bundle;
@@ -32,7 +32,7 @@ import android.view.ViewGroup;
 public class AbstractGeeksvilleMapFragment extends Fragment implements LifeCyclePublisher {
 
 	// private LinearLayout linearLayout;
-	protected GeeksvilleMapView mapView;
+	protected GeeksvilleMapViewOld mapView;
 
 	private MyLocationOverlay myLocationOverlay;
 
@@ -116,7 +116,7 @@ public class AbstractGeeksvilleMapFragment extends Fragment implements LifeCycle
 		// should be identical
 		View v = inflater.inflate(layoutId, container, false);
 
-		mapView = (GeeksvilleMapView) v.findViewById(mapViewId);
+		mapView = (GeeksvilleMapViewOld) v.findViewById(mapViewId);
 
 		mapView.setBuiltInZoomControls(true);
 		// Set default map view
