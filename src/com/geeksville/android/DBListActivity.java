@@ -20,11 +20,15 @@
  ******************************************************************************/
 package com.geeksville.android;
 
+import java.io.File;
+import java.util.List;
+
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -37,7 +41,12 @@ import android.widget.Toast;
 import com.flurry.android.FlurryAgent;
 import com.geeksville.gaggle.GagglePrefs;
 import com.geeksville.gaggle.R;
+import com.geeksville.location.CSVReader;
+import com.geeksville.location.ExtendedLocation;
+import com.geeksville.location.LocationDBWriter;
 import com.geeksville.location.LocationLogDbAdapter;
+import com.geeksville.location.PositionWriter;
+import com.geeksville.view.AsyncProgressDialog;
 
 public abstract class DBListActivity extends ListActivity {
 
@@ -243,4 +252,71 @@ public abstract class DBListActivity extends ListActivity {
 	 * @param item
 	 */
 	protected abstract void handleViewItem(MenuItem item);
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		if (super.onOptionsItemSelected(item)) {
+			return true;
+		}
+
+		if (false){//item.getItemId() == R.id.import_flight_menu) {
+			// just a dummy, introduce fileselector here later:
+			AsyncFileReader reader = new AsyncFileReader("hoi.csv", "csv");
+			reader.execute();
+			return true;
+		}
+		return false;
+	}
+
+	private class AsyncFileReader extends AsyncProgressDialog {
+		String filetype;
+
+		public AsyncFileReader(String filename, final String filetype) {
+			super(DBListActivity.this, getString(R.string.reading_file),
+				getString(R.string.please_wait));
+
+			this.filetype = filetype;
+		}
+
+		@Override
+		protected void doInBackground() {
+
+			final PositionWriter dbwriter =
+				new LocationDBWriter(DBListActivity.this, false, "Hansie", "new imported track");
+			File file =
+				new File(Environment.getExternalStorageDirectory() + "/Gaggle/TrackLogs/hoi.csv");
+
+			CSVReader iread = new CSVReader(file);
+			List<ExtendedLocation> loclist = iread.toLocationList();
+			dbwriter.emitProlog();
+			for (ExtendedLocation location : loclist) {
+				dbwriter.emitPosition(location.getTime(), location.getLatitude(),
+					location.getLongitude(), (float) location.getAltitude(),
+					(int) location.getBearing(), location.getSpeed(), location.getAccel(),
+					location.getVertSpeed());
+			}
+			dbwriter.emitEpilog();
+
+			// adapter = createListAdapter();
+			// setListAdapter(adapter);
+		}
+
+		@Override
+		protected void onPostExecute(Void unused) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(unused);
+			// adapter.notifyDataSetInvalidated();
+
+			// bit plump way to update, but it works:
+			myCursor.close();
+			myCursor = createCursor();
+			startManagingCursor(myCursor);
+			adapter = createListAdapter();
+			setListAdapter(adapter);
+			onContentChanged();
+
+		}
+	}
+
 }
