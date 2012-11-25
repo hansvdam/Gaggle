@@ -218,7 +218,7 @@ public class FlyMapFragment  extends AbstractGeeksvilleMapFragment
 				builder.setTitle(R.string.unable_to_open_igc_file);
 				builder.setMessage(ex.toString());
 				builder.setPositiveButton(R.string.okay, null);
-
+				
 				AlertDialog alert = builder.create();
 				alert.show();
 			}

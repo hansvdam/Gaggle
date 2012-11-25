@@ -61,7 +61,7 @@ import com.geeksville.gaggle.GaggleApplication;
 import com.geeksville.gaggle.GagglePrefs;
 import com.geeksville.gaggle.R;
 import com.geeksville.gaggle.TopActivity;
-import com.geeksville.gaggle.WaypointDialog;
+import com.geeksville.gaggle.WaypointDialogFragment;
 import com.geeksville.info.Units;
 import com.geeksville.io.LineEndingStream;
 import com.geeksville.location.ExtendedWaypoint;
@@ -477,7 +477,7 @@ public class ListWaypointsFragment extends AbstractDBListFragment implements Obs
 			ExtendedWaypoint w = new ExtendedWaypoint(name,
 					myloc.getLatitude(), myloc.getLongitude(),
 					(int) myloc.getAltitude(), 0,
-					Waypoint.Type.Unknown.ordinal());
+					Waypoint.Type.Unknown);
 			app.getWaypoints().add(w);
 
 			myCursor.requery();
@@ -552,8 +552,8 @@ public class ListWaypointsFragment extends AbstractDBListFragment implements Obs
 			}
 		};
 
-		WaypointDialog d = new WaypointDialog(getActivity(), w, onOkay, onGoto);
-		d.show();
+		WaypointDialogFragment d = new WaypointDialogFragment(getActivity(), w, onOkay, onGoto, false);
+		d.show(getActivity().getSupportFragmentManager(),"editwaypoint");
 	}
 
 	@Override
