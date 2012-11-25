@@ -132,7 +132,7 @@ public class WaypointOverlay extends ItemizedOverlayWithBubble<WaypointItem>
 		String name = DateFormat.format("yy/MM/dd kk:mm:ss", now)
 				.toString();
 
-		final ExtendedWaypoint wayPoint = new ExtendedWaypoint(name, mGeoPoint.getLatitudeE6(), mGeoPoint.getLongitudeE6(), mGeoPoint.getAltitude(), Waypoint.Type.Unknown);
+		final ExtendedWaypoint wayPoint = new ExtendedWaypoint(name, mGeoPoint.getLatitudeE6()/1E6, mGeoPoint.getLongitudeE6()/1E6, mGeoPoint.getAltitude(), Waypoint.Type.Unknown);
 		new WaypointDialogFragment(activity,wayPoint,new Runnable() {
 			
 			@Override

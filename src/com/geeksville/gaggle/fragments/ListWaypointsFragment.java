@@ -474,17 +474,23 @@ public class ListWaypointsFragment extends AbstractDBListFragment implements Obs
 			String name = DateFormat.format("yy/MM/dd kk:mm:ss", now)
 					.toString();
 
-			ExtendedWaypoint w = new ExtendedWaypoint(name,
+			final ExtendedWaypoint wayPoint = new ExtendedWaypoint(name,
 					myloc.getLatitude(), myloc.getLongitude(),
 					(int) myloc.getAltitude(), 0,
 					Waypoint.Type.Unknown);
-			app.getWaypoints().add(w);
+			new WaypointDialogFragment(getActivity(),wayPoint,new Runnable() {
+				
+				@Override
+				public void run() {
+					db.add(wayPoint);
+					Toast.makeText(getActivity(),
+							R.string.waypoint_created, Toast.LENGTH_SHORT).show();
+				}
+			}, true).show(getActivity().getSupportFragmentManager(),"createwaypoint");
 
 			myCursor.requery();
 
 			// FIXME - then select it in the cursor/GUI
-			Toast.makeText(getActivity(),
-					R.string.waypoint_created, Toast.LENGTH_SHORT).show();
 		}
 	}
 	private void handleShowOnMapWaypoint(MenuItem item){
