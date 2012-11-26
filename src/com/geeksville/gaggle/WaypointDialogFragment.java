@@ -28,6 +28,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
+import android.text.Editable;
 import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -239,8 +240,11 @@ public class WaypointDialogFragment extends DialogFragment implements
 		// FIXME, validate names for uniqueness
 		if (create) {
 			waypoint.name = name.getText().toString();
-			if(name ==null || name.equals("")){
+			Editable nameText = name.getText();
+			if(nameText ==null || nameText.toString().trim().equals("")){
 				waypoint.name = name.getHint().toString();
+			} else {
+				waypoint.name = name.getText().toString().trim();
 			}
 		} else {
 			waypoint.name = name.getText().toString().trim();
