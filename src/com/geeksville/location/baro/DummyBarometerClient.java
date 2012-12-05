@@ -17,6 +17,7 @@ public class DummyBarometerClient extends Observable implements IBarometerClient
 	private float currentBat = 3.3F;
 	private float currentBatPrct = .9F;
 	private Thread thread;
+	  private String status = "FlyNet";
 
 	private boolean isStopped = false;
 
@@ -94,5 +95,15 @@ public class DummyBarometerClient extends Observable implements IBarometerClient
 				// loop back... :)
 			}
 		}
+	}
+
+	public void setStatus(String s) {
+		status = s;
+	}
+
+	@Override
+	public String getStatus() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
