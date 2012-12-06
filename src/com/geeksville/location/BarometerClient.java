@@ -77,17 +77,17 @@ public class BarometerClient {
 				instance_type = vario_src;
 			}
 			break;
-		case 3:
+		case 2:
 			// FlyNet
 			if (FlynetBarometerClient.isAvailable()){
 				instance = new FlynetBarometerClient(context);
 				instance_type = vario_src;
 			}
 			break;
-		case 4:
+		case 3:
 			// Test BT
 			break;
-		case 5:
+		case 4:
 			instance = new DummyBarometerClient(context);
 			instance_type = vario_src;
 			break;
