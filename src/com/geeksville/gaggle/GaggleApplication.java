@@ -48,6 +48,9 @@ import com.geeksville.location.WaypointDB;
  * @author kevinh
  * 
  */
+
+// crashreport can be investigated on https://docs.google.com/spreadsheet/ccc?key=0Ar4---J9V6-NdEM2U0gwX2lyblRkWnRoSHBSU3BmZmc
+@ReportsCrashes(formKey = "dEM2U0gwX2lyblRkWnRoSHBSU3BmZmc6MQ", mode = ReportingInteractionMode.TOAST, forceCloseDialogAfterToast = false)
 public class GaggleApplication extends Application {
 
 	/**
@@ -97,6 +100,7 @@ public class GaggleApplication extends Application {
 	public void onCreate() {
 		// TODO Auto-generated method stub
 	    ACRA.init(this);
+	    ACRA.getConfig().setResToastText(R.string.crashToastText);
 		super.onCreate();
 		GagglePrefs prefs = new GagglePrefs(this);
 		if (prefs.isFlurryEnabled()){
