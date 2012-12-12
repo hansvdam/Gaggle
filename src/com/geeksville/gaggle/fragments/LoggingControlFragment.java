@@ -227,7 +227,7 @@ public class LoggingControlFragment extends ListFragment implements
 
 		boolean showAltButton = false;
 		try {
-			showAltButton = BarometerClient.create(getActivity()) != null
+			showAltButton = BarometerClient.getInstance().getBaroClient() != null
 					&& GPSClient.instance != null
 					&& GPSClient.instance.getLastKnownLocation() != null
 					&& GPSClient.instance.getLastKnownLocation().hasAltitude();
@@ -292,7 +292,7 @@ public class LoggingControlFragment extends ListFragment implements
 		} else if (itemId == R.id.setAltFromGPS) {
 			// FIXME - http://blueflyvario.blogspot.com/2011_05_01_archive.html
 			Location loc = GPSClient.instance.getLastKnownLocation();
-			BarometerClient.create(getActivity()).setAltitude(
+			BarometerClient.getInstance().setAltitude(
 					(float) loc.getAltitude());
 			return true;
 			/*

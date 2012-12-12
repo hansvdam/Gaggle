@@ -87,6 +87,11 @@ public class AndroidBarometerClient extends SensorClient implements
 		Log.d(TAG, "Setting damp=" + damp + " xspan=" + xspan);
 	}
 
+	@Override
+	public void deleteObserver(Observer observer) {
+		super.deleteObserver(observer);
+	}
+	
 	// / If we've been calibrated, override the GPS provided altitude with our
 	// baro based alt
 	public void improveLocation(Location l) {

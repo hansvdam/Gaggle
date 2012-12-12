@@ -32,9 +32,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import com.flurry.android.FlurryAgent;
+import com.geeksville.location.BarometerClient;
 import com.geeksville.location.ExtendedWaypoint;
 import com.geeksville.location.GPSToPositionWriter;
 import com.geeksville.location.LocationLogDbAdapter;
@@ -101,6 +103,7 @@ public class GaggleApplication extends Application {
 			FlurryAgent.setCaptureUncaughtExceptions(false);
 			FlurryAgent.setReportLocation(true);
 		}
+		BarometerClient.initInstance();
 	}
 
 

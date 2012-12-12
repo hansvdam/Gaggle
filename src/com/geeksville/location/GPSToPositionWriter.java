@@ -75,7 +75,6 @@ public class GPSToPositionWriter extends AbstractLocationListener implements
   ChangeHandler myObserver;
 
   AccelerometerClient accel = null;
-	IBarometerClient baro = null;
 
   public void setObserver(ChangeHandler obs) {
     myObserver = obs;
@@ -129,6 +128,10 @@ public class GPSToPositionWriter extends AbstractLocationListener implements
     throw new IllegalStateException("Unknown GPS logging state");
   }
 
+  private BarometerClient getBaro() {
+		return BarometerClient.getInstance();
+	}
+
   /**
    * Stop logging
    */
@@ -154,9 +157,8 @@ public class GPSToPositionWriter extends AbstractLocationListener implements
         accel = null;
       }
 
-      if (baro != null) {
-        baro.deleteObserver(this);
-        baro = null;
+      if (getBaro() != null) {
+    	  getBaro().deleteObserver(this);
       }
     }
   }
@@ -170,13 +172,8 @@ public class GPSToPositionWriter extends AbstractLocationListener implements
       if (accel != null)
         accel.addObserver(this);
 
-      try {
-        baro = BarometerClient.create(context);
-      } catch (VerifyError ex) {
-        Log.e(TAG, "Not on 1.5: " + ex);
-      }
-      if (baro != null)
-        baro.addObserver(this);
+      if (getBaro() != null)
+    	  getBaro().addObserver(this);
 
       this.numPoints = 0;
       this.pollInterval = pollIntervalSecs;
@@ -251,7 +248,7 @@ public class GPSToPositionWriter extends AbstractLocationListener implements
     // convert m/sec to km/hr
 
     float[] accelVals = (accel != null) ? accel.getValues() : null;
-    float vspd = (baro != null) ? baro.getVerticalSpeed() : Float.NaN;
+    float vspd = (getBaro() != null) ? getBaro().getVerticalSpeed() : Float.NaN;
 
     // The emulator will falsely claim 0 for the first point reported -
     // skip it
