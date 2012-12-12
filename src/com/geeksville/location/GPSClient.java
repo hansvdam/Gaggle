@@ -92,7 +92,6 @@ public class GPSClient extends Service implements IGPSClient {
 
   // / Once we get a GPS altitude we will fixup the barometer
   private boolean hasSetBarometer = false;
-	private IBarometerClient baro = null;
   private AudioVario vario;
 
   /**
@@ -277,7 +276,6 @@ public class GPSClient extends Service implements IGPSClient {
     thread.start();
 
     try {
-      baro = BarometerClient.create(GPSClient.this);
 
       if (vario != null)
         vario.onCreate(this, thread.getLooper());
@@ -578,15 +576,15 @@ public class GPSClient extends Service implements IGPSClient {
       // If we receive a position update, assume the GPS is working
       currentStatus = AVAILABLE;
 
-      if (baro != null) {
+      if (getBaro().getBaroClient() != null) {
         if (!hasSetBarometer && location.hasAltitude()) {
           hasSetBarometer = true;
-          baro.setAltitude((float) location.getAltitude());
+          getBaro().setAltitude((float) location.getAltitude());
         }
 
         // Before forwarding the location to others, substitude the
         // (better) baro based altitude
-        baro.improveLocation(location);
+        getBaro().improveLocation(location);
       }
 
       // Used to avoid holding the lock while running (slow) handlers
@@ -602,6 +600,10 @@ public class GPSClient extends Service implements IGPSClient {
       for (LocationListener listen : lcopy)
         listen.onLocationChanged(location);
     }
+
+    private BarometerClient getBaro() {
+		return BarometerClient.getInstance();
+	}
 
     @Override
     public void onProviderDisabled(String provider) {

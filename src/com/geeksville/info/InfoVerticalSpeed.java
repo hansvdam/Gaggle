@@ -84,10 +84,6 @@ public class InfoVerticalSpeed extends InfoField implements Observer {
   public void onCreate(Activity context) {
     super.onCreate(context);
 
-    if (context != null) {
-      // FIXME - we should share one compass client object
-      baro = BarometerClient.create(context);
-    }
   }
 
   /**

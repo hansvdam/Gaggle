@@ -143,7 +143,8 @@ public class FlynetBarometerClient extends Observable implements
   @Override
   public float getVerticalSpeed() {
     try {
-      return regression.getSlope() * 1000;
+      float slope = regression.getSlope();
+	return slope * (float)1000;
     } catch (ArithmeticException divByZero) {
       return Float.NaN;
     }

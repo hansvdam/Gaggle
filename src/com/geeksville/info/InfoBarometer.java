@@ -39,8 +39,6 @@ public class InfoBarometer extends InfoField implements Observer {
 
 	private float pressure;
 
-	private IBarometerClient baro;
-
 	@Override
 	public String getLabel() {
 		return context.getString(R.string.barometer);
@@ -54,8 +52,11 @@ public class InfoBarometer extends InfoField implements Observer {
 	
 	@Override
   public String getText() {
-	  status = (baro == null)?"(none)":baro.getStatus();
+	  status = (getBaro() == null)?"(none)":getBaro().getStatus();
 		return String.format("%s %.2f", status, pressure);
+	}
+	private BarometerClient getBaro() {
+		return BarometerClient.getInstance();
 	}
 
 	/**
@@ -73,11 +74,6 @@ public class InfoBarometer extends InfoField implements Observer {
 	@Override
 	public void onCreate(Activity context) {
 		super.onCreate(context);
-
-		if (context != null) {
-			// FIXME - we should share one compass client object
-			baro = BarometerClient.create(context);
-		}
 	}
 
 	/**
@@ -87,8 +83,8 @@ public class InfoBarometer extends InfoField implements Observer {
 	void onHidden() {
 		super.onHidden();
 
-		if (baro != null)
-			baro.deleteObserver(this);
+		if (getBaro() != null)
+			getBaro().deleteObserver(this);
 	}
 
 	/**
@@ -98,8 +94,8 @@ public class InfoBarometer extends InfoField implements Observer {
 	void onShown() {
 		super.onShown();
 
-		if (baro != null)
-			baro.addObserver(this);
+		if (getBaro() != null)
+			getBaro().addObserver(this);
 	}
 
 	@Override

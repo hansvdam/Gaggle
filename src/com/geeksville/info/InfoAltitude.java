@@ -33,7 +33,6 @@ import com.geeksville.location.IBarometerClient;
 /// FIXME - show either baro or GPS based altitude?
 public class InfoAltitude extends GPSField implements Observer {
 
-	private IBarometerClient baro;
 
 	public InfoAltitude() {
 		// minDistMeters = 0; // We want updates even if horizontal pos hasn't
@@ -47,6 +46,10 @@ public class InfoAltitude extends GPSField implements Observer {
 	@Override
 	public String getLabel() {
 		return context.getString(R.string.altitude);
+	}
+
+	private BarometerClient getBaro() {
+		return BarometerClient.getInstance();
 	}
 
 	/**
@@ -89,10 +92,6 @@ public class InfoAltitude extends GPSField implements Observer {
 	public void onCreate(Activity context) {
 		super.onCreate(context);
 
-		if (context != null) {
-			// FIXME - we should share one compass client object
-			baro = BarometerClient.create(context);
-		}
 	}
 
 	/**
@@ -102,10 +101,11 @@ public class InfoAltitude extends GPSField implements Observer {
 	void onHidden() {
 		super.onHidden();
 
-		if (baro != null)
-			baro.deleteObserver(this);
+		if (getBaro() != null)
+			getBaro().deleteObserver(this);
 	}
 
+	
 	/**
 	 * @see com.geeksville.info.InfoField#onShown()
 	 */
@@ -113,8 +113,8 @@ public class InfoAltitude extends GPSField implements Observer {
 	void onShown() {
 		super.onShown();
 
-		if (baro != null)
-			baro.addObserver(this);
+		if (getBaro() != null)
+			getBaro().addObserver(this);
 	}
 
 	// / Handle updates from GPS
@@ -133,7 +133,7 @@ public class InfoAltitude extends GPSField implements Observer {
 	@Override
 	public void update(Observable observable, Object data) {
 
-		float nalt = baro.getAltitude();
+		float nalt = getBaro().getAltitude();
 
 		if (nalt != altMeters) {
 			altMeters = nalt;

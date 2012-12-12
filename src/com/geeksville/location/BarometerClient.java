@@ -20,30 +20,54 @@
  ******************************************************************************/
 package com.geeksville.location;
 
-import com.geeksville.gaggle.R;
-import com.geeksville.location.baro.DummyBarometerClient;
+import java.util.Observable;
+import java.util.Observer;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.preference.PreferenceManager;
-import android.util.Log;
-import android.widget.Toast;
+
+import com.geeksville.gaggle.GaggleApplication;
+import com.geeksville.location.baro.DummyBarometerClient;
 
 /// FIXME - add a basic vario http://www.paraglidingforum.com/viewtopic.php?p=48465
-public class BarometerClient {
+public class BarometerClient extends Observable implements SharedPreferences.OnSharedPreferenceChangeListener, IBarometerClient, Observer {
 
   @SuppressWarnings("unused")
   private static final String TAG = "BarometerClient";
 
-  private static IBarometerClient instance = null;
-  private static int instance_type;
+  private IBarometerClient baroClient = null;
+  private int baroClientType;
 
+	private Context context;
+
+	private static BarometerClient instance;
+
+	private BarometerClient(Context context) {
+		this.context = context;
+		PreferenceManager.getDefaultSharedPreferences(context)
+				.registerOnSharedPreferenceChangeListener(this);
+		create();
+	}
+	
+	public static BarometerClient initInstance(){
+		return getInstance();
+	}
+
+	public static BarometerClient getInstance() {
+		if (instance == null) {
+			instance = new BarometerClient(GaggleApplication.getContext());
+		}
+		return instance;
+	}
+  
   /**
    * All users of barometer share the same (expensive) instance
    * 
    * @return null for if not available
    */
-  public static IBarometerClient create(Context context) {
+  public IBarometerClient create() {
 
     SensorClient.initManager(context);
 
@@ -58,48 +82,132 @@ public class BarometerClient {
 		vario_src = Integer.parseInt(vario_source);
 	}
 	
-	/*
-	 * if you've changed this pref after having created an instance
-	 * then you'll have to stick to this instance until you restart.
-	 * Else, we should transfer observers from one observable to the new one.
-	 */
-	if (instance == null){
+	
+	// if barometer already exists: remember all it's observers:
+	boolean barometerChanged = false;
+	if (baroClient != null && baroClientType != vario_src){
+		barometerChanged = true;
+		baroClient.deleteObserver(this);
+	}
+	
+	// (re)instantiate the varioclient:
+	if (baroClient == null || baroClientType != vario_src){
+		barometerChanged = true;
 		switch (vario_src){
 		case 0:
 			if (AndroidBarometerClient.isAvailable()){
-				instance = new AndroidBarometerClient(context);
-				instance_type = vario_src;
+				baroClient = new AndroidBarometerClient(context);
+				baroClientType = vario_src;
 			}
 			break;
 		case 1: //CNES
 			if (CNESBarometerClient.isAvailable()){
-				instance = new CNESBarometerClient(context);
-				instance_type = vario_src;
+				baroClient = new CNESBarometerClient(context);
+				baroClientType = vario_src;
 			}
 			break;
 		case 2:
 			// FlyNet
 			if (FlynetBarometerClient.isAvailable()){
-				instance = new FlynetBarometerClient(context);
-				instance_type = vario_src;
+				baroClient = new FlynetBarometerClient(context);
+				baroClientType = vario_src;
 			}
 			break;
 		case 3:
 			// Test BT
 			break;
 		case 4:
-			instance = new DummyBarometerClient(context);
-			instance_type = vario_src;
+			baroClient = new DummyBarometerClient(context);
+			baroClientType = vario_src;
 			break;
 		}
-	} else  if (instance != null && instance_type != vario_src){
-		// trying to create the baro again from a different source
-		CharSequence text = context.getString(R.string.baro_change_need_restart);
-		int duration = Toast.LENGTH_SHORT;
-
-		Toast toast = Toast.makeText(context, text, duration);
-		toast.show();
 	}
-	return instance;
+	
+	// if teh barometer has changed (and there were observers on the old baroclient): resassign them to the new one:
+	if(barometerChanged && baroClient !=null){
+		Observable client = (Observable) baroClient;
+		// reassign the observers
+		client.addObserver(this);
+	}
+	return baroClient;
   }
+  
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+			String key) {
+		create();
+	}
+
+	public IBarometerClient getBaroClient() {
+		return baroClient;
+	}
+
+	@Override
+	public void setAltitude(float meters) {
+		if(getBaroClient()!=null){
+			getBaroClient().setAltitude(meters);
+		}		
+	}
+
+	@Override
+	public float getAltitude() {
+		if(getBaroClient()!=null){
+			return getBaroClient().getAltitude();
+		}		
+		return 0;
+	}
+
+	@Override
+	public float getPressure() {
+		if(getBaroClient()!=null){
+			return getBaroClient().getPressure();
+		}		
+		return 0;
+	}
+
+	@Override
+	public float getBattery() {
+		if(getBaroClient()!=null){
+			getBaroClient().getBattery();
+		}		
+		return 0;
+	}
+
+	@Override
+	public float getBatteryPercent() {
+		if(getBaroClient()!=null){
+			getBaroClient().getBatteryPercent();
+		}		
+		return 0;
+	}
+
+	@Override
+	public String getStatus() {
+		if(getBaroClient()!=null){
+			getBaroClient().getStatus();
+		}		
+		return null;
+	}
+
+	@Override
+	public float getVerticalSpeed() {
+		if(getBaroClient()!=null){
+			return getBaroClient().getVerticalSpeed();
+		}		
+		return 0;
+	}
+
+	@Override
+	public void improveLocation(Location l) {
+		if(getBaroClient()!=null){
+			getBaroClient().improveLocation(l);
+		}		
+	}
+
+	@Override
+	public void update(Observable observable, Object data) {
+		setChanged();
+		notifyObservers(data);
+	}
+
 }

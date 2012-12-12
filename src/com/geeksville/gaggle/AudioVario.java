@@ -44,7 +44,6 @@ public class AudioVario implements Observer, Runnable,
   private TonePlayer sinkTone;
   private TonePlayer curTone;
 
-  private IBarometerClient baro;
   Handler handler;
 
   /** Or <0 for disabled */
@@ -78,22 +77,25 @@ public class AudioVario implements Observer, Runnable,
     }
   }
 
+  private boolean use_audio_vario = false;
+  
   private void createFromPreferences() {
     onDestroy(); // Tear down old devices
-    final boolean use_baro = PreferenceUtil.getBoolean(context, "use_baro", false);
-    final boolean use_audio_vario = PreferenceUtil.getBoolean(context, "use_audible_vario", true); 
-    if (use_baro){
-        baro = BarometerClient.create(context);
-        if (baro != null)
-          baro.addObserver(this);
+    final boolean use_baro = PreferenceUtil.getBoolean(context, "use_baro_device", false);
+    final boolean local_use_audio_vario = PreferenceUtil.getBoolean(context, "use_audible_vario", true); 
+    if (use_baro && local_use_audio_vario){
+        if (getBaro() != null)
+        	// delete this observer if it was already registered;
+        	getBaro().deleteObserver(this);
+        	getBaro().addObserver(this);
     } else {
-    	if (baro != null){
-    		baro.deleteObserver(this);
-    		baro = null;
+    	if (getBaro() != null){
+    		getBaro().deleteObserver(this);
     	}
     }
     
-    if (use_audio_vario) {
+    if (local_use_audio_vario != this.use_audio_vario) {
+    	this.use_audio_vario = local_use_audio_vario;
       liftTone = new TonePlayer(PreferenceUtil.getFloat(context, "liftTone2",
           1100f));
       sinkTone = new TonePlayer(PreferenceUtil.getFloat(context, "sinkTone",
@@ -121,8 +123,8 @@ public class AudioVario implements Observer, Runnable,
    * @see com.geeksville.info.InfoField#onHidden()
    */
   public void onDestroy() {
-    if (baro != null)
-      baro.deleteObserver(this);
+    if (getBaro() != null)
+    	getBaro().deleteObserver(this);
     if (liftTone != null)
       liftTone.close();
     if (sinkTone != null)
@@ -131,8 +133,13 @@ public class AudioVario implements Observer, Runnable,
 
   @Override
   public void update(Observable observable, Object data) {
-    updateTone(baro.getVerticalSpeed());
+    float verticalSpeed = getBaro().getVerticalSpeed();
+	updateTone(verticalSpeed);
   }
+
+private BarometerClient getBaro() {
+	return BarometerClient.getInstance();
+}
 
   public void testTones() {
     Thread t = new Thread(new Runnable() {
