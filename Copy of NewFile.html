@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<style type="text/css">
+html {
+	height: 100%
+}
+
+body {
+	height: 100%;
+	margin: 0;
+	padding: 0
+}
+
+#map_canvas {
+	height: 100%
+}
+</style>
+<script type="text/javascript"
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAtIq-6_J7OOhFPj9jtdv2xpbFq1yyZW7U&sensor=false">
+	
+</script>
+<script type="text/javascript" src="maplabel-compiled.js"></script>
+<script type="text/javascript" src="csvtoarray.js"></script>
+<script type="text/javascript" src="readtextfile.js"></script>
+<script type="text/javascript">
+	function initialize() {
+		var mapOptions = {
+			center : new google.maps.LatLng(47, 10),
+			zoom : 7,
+			mapTypeId : google.maps.MapTypeId.ROADMAP
+		};
+		var map = new google.maps.Map(document.getElementById("map_canvas"),
+				mapOptions);
+		var data = CSVToArray( read_external_text_file("data.csv"), ',' );
+		for(var i =0;i<data.lenght;i++){
+			var lineData = data[i];
+			
+		}
+		var rectangle = new google.maps.Rectangle();
+		var rectOptions = {
+			strokeColor : "#FF0000",
+			strokeOpacity : 0.8,
+			strokeWeight : 2,
+			fillColor : "#FF0000",
+			fillOpacity : 0.35,
+			map : map,
+			bounds : new google.maps.LatLngBounds(new google.maps.LatLng(
+					45.560218, 6.37207, true), new google.maps.LatLng(
+					46.080852, 7.822265, true))
+		};
+		rectangle.setOptions(rectOptions);
+		var mapLabel = new MapLabel({
+			text : 'Test',
+			position : new google.maps.LatLng((45.56+46.08)/2+ (46.08-45.56)/4, (6.37+7.82)/2),
+			map : map,
+			fontSize : 20,
+			align : 'center'
+		});
+	}
+</script>
+</head>
+<body onload="initialize()">
+	<div id="map_canvas" style="width: 100%; height: 100%"></div>
+</body>
+</html>
