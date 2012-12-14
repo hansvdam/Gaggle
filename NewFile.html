@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<style type="text/css">
+html {
+	height: 100%
+}
+
+body {
+	height: 100%;
+	margin: 0;
+	padding: 0
+}
+
+#map_canvas {
+	height: 100%
+}
+</style>
+<script type="text/javascript"
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAtIq-6_J7OOhFPj9jtdv2xpbFq1yyZW7U&sensor=false">
+	
+</script>
+<script type="text/javascript" src="maplabel-compiled.js"></script>
+<script type="text/javascript" src="csv2array.js"></script>
+<script type="text/javascript" src="readtextfile.js"></script>
+<!-- <script type="text/javascript" src="http://www.damsoft.nl/data.js"></script> -->
+<script type="text/javascript">
+	
+	function initialize() {
+	
+		var mapOptions = {
+			center : new google.maps.LatLng(47, 10),
+			zoom : 7,
+			mapTypeId : google.maps.MapTypeId.ROADMAP
+		};
+		var map = new google.maps.Map(document.getElementById("map_canvas"),
+				mapOptions);
+// 		read_external_text_file("http://www.damsoft.nl/data.txt", function(xmlhttp){
+// 			textString = xmlhttp.responseString;
+// 			var dataArray = getData();
+		var textString = read_external_text_file("data.txt");
+			var data = csv2array(textString, ',');
+			makeAreas(data,map);
+// 			alert(textString);
+// 		});
+// 		var textString = read_external_text_file("https://docs.google.com/uc?export=download&id=0B74---J9V6-NTFl6emRJa0lHYXc");
+	}
+	
+	function makeAreas(data, map){
+// 		var data = csv2array(textString, ',');
+		for ( var i = 0; i < data.length; i++) {
+			var lineData = data[i];
+
+			var rectangle = new google.maps.Rectangle();
+			var rectOptions = {
+				strokeColor : lineData[5],
+				strokeOpacity : 0.8,
+				strokeWeight : 2,
+				fillColor : lineData[5],
+				fillOpacity : 0.35,
+				map : map,
+				bounds : new google.maps.LatLngBounds(new google.maps.LatLng(
+						lineData[3], lineData[0], true), new google.maps.LatLng(
+								lineData[1], lineData[2], true))
+			};
+			rectangle.setOptions(rectOptions);
+			google.maps.event.addListener(rectangle,'click',function(){
+				window.location.href = lineData[7];
+			
+			});
+			var mapLabel = new MapLabel({
+				text : lineData[4],
+				fontColor : lineData[6],
+				minZoom :7,
+				position : new google.maps.LatLng((45.56 + 46.08) / 2
+						+ (46.08 - 45.56) / 4, (6.37 + 7.82) / 2),
+				map : map,
+				fontSize : 15,
+				align : 'center'
+			});
+		}
+
+	}
+</script>
+</head>
+<body onload="initialize()">
+	<div id="map_canvas" style="width: 100%; height: 100%"></div>
+</body>
+</html>
