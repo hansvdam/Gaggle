@@ -12,4 +12,4 @@
 #            |                         |
 #            +-------------------------+  (x2,y2)
 #
-6.37207,46.080852,7.822265,45.560218,Chamonix,#FF0000,#000000,http://www.damsoft.nl/MyChamonix.mbtiles
+6.37207,46.080852,7.822265,45.560218,Chamonix,#FF0000,#000000,https://docs.google.com/open?id=0B74---J9V6-NbkVLVU5yNlQ4eEk
