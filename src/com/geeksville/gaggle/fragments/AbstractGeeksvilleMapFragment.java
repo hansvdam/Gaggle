@@ -293,8 +293,10 @@ public class AbstractGeeksvilleMapFragment extends Fragment implements LifeCycle
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
                     item.setChecked(true);
-                    mapView.getTileProvider().setTileSource(info);
-
+                    ITileSource oldTileSource = mapView.getTileProvider().getTileSource();
+                    if(oldTileSource != info){
+                    	mapView.getTileProvider().setTileSource(info);
+                    }
                     if (item.getTitle().equals(ARCHIVEMENUNAME)) {
                     	FragmentActivity activity = AbstractGeeksvilleMapFragment.this.getActivity();
                         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -369,6 +371,7 @@ public class AbstractGeeksvilleMapFragment extends Fragment implements LifeCycle
             // tileSource.addArchiveInfo(archiveInfo);
             synchronizeArchives(selectedArchives, infos);
             ((MapTileProviderBasic2) mapView.getTileProvider()).initTileSource();
+            mapView.invalidate();
         }
 
         private void synchronizeArchives(Set<String> selectedArchives, List<ArchiveInfo> infos) {
