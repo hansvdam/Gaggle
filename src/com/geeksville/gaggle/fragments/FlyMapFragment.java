@@ -308,7 +308,7 @@ public class FlyMapFragment  extends AbstractGeeksvilleMapFragment
 	public void onPause() {
 		super.onPause();
 		// necessary to prevent leaking:
-		mapView.getTileProvider().detach();
+//		mapView.getTileProvider().detach();
 //		wptOver.onPause();
 		if (weather_overlay != null){
 			weather_overlay.unregisterToWeatherUpdate(getActivity());
