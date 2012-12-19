@@ -267,8 +267,8 @@ public class TopActivity extends FragmentActivity implements
 
     BetaSplashActivity.perhapsSplash(this);
 
-    Donate d = new Donate(this);
-    d.perhapsSplash();
+//    Donate d = new Donate(this);
+//    d.perhapsSplash();
 
     updateFromOld();
 
