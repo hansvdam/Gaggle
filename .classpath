@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry combineaccessrules="false" kind="src" path="/osmdroid-android"/>
 	<classpathentry excluding="com/geeksville/test/" kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="lib" path="libs/FlurryAgent.jar"/>
@@ -8,7 +9,7 @@
 	<classpathentry kind="lib" path="libs/osmbonuspack_v2.4.jar"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-	<classpathentry kind="lib" path="libs/osmdroid-android-3.0.8.jar"/>
+	<classpathentry kind="lib" path="libs/osmdroid-android-3.0.8.jar" sourcepath="C:/Users/Hans/.m2/repository/org/osmdroid/osmdroid-android/3.0.8/osmdroid-android-3.0.8-sources.jar"/>
 	<classpathentry kind="lib" path="libs/saveablelib.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

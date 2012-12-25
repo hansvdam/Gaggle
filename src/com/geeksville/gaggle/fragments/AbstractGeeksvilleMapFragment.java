@@ -167,9 +167,6 @@ public class AbstractGeeksvilleMapFragment extends Fragment implements LifeCycle
             for (String archiveName : achiveNames) {
                 archiveTileSource.addArchiveInfo(MapTileProviderBasic2.makeMBTilesArchiveInfo(archiveName, true));
             }
-            if(GagglePrefs.getInstance().getUseOnlineSourceAsBackgroundForArchives()) {
-            	archiveTileSource.setOnlineBackground(defaultOnlineBackgroundTileSource);
-            }
         }
         
         tileProvider.setTileSource(tileSource);
@@ -317,18 +314,12 @@ public class AbstractGeeksvilleMapFragment extends Fragment implements LifeCycle
                         DialogInterface.OnMultiChoiceClickListener archiveDialogListener =
                             new ArchiveSelectionListener(selectedArchives, availableArchiveFiles);
                         // make extra option for the background online source:
-                        boolean[] checkedArchives = new boolean[availableArchiveFiles.length+1];
+                        boolean[] checkedArchives = new boolean[availableArchiveFiles.length];
                         for (int i = 0; i < availableArchiveFiles.length; i++) {
                             checkedArchives[i] = selectedArchives.contains(availableArchiveFiles[i]);
                         }
-                        // make extra string for the background online source: 
-                        String[] stringsToBeDisplayed = new String[availableArchiveFiles.length+1];
-                        System.arraycopy(availableArchiveFiles, 0, stringsToBeDisplayed, 0, availableArchiveFiles.length);
-                        stringsToBeDisplayed[availableArchiveFiles.length] = getActivity().getString(
-								R.string.use_background_online_source);
-                        checkedArchives[availableArchiveFiles.length] = GagglePrefs.getInstance().getUseOnlineSourceAsBackgroundForArchives();
 //						if (availableArchiveFiles.length != 0 || ) {
-							builder.setMultiChoiceItems(stringsToBeDisplayed,
+							builder.setMultiChoiceItems(availableArchiveFiles,
 									checkedArchives, archiveDialogListener);
 //						} else {
 //							builder.setMessage(activity.getString(R.string.no_archives_available));
@@ -373,23 +364,10 @@ public class AbstractGeeksvilleMapFragment extends Fragment implements LifeCycle
 		public void onClick(DialogInterface dialog, int which, boolean isChecked) {
 			// if it is one of the real displayed archives (not the extra option
 			// to display an online tilesource for the rest):
-			if (which != archiveFiles.length) {
-				if (isChecked){
-					selectedArchives.add(archiveFiles[which]);
-				}
-				else{
-					selectedArchives.remove(archiveFiles[which]);
-				}
+			if (isChecked) {
+				selectedArchives.add(archiveFiles[which]);
 			} else {
-				GagglePrefs.getInstance().setUseOnlineSourceAsBackgroundForArchives(isChecked);
-				MapTileProviderBasic2 tileProvider = ((MapTileProviderBasic2) mapView.getTileProvider());
-				ArchiveTileSource archiveTileSource = ((ArchiveTileSource)tileProvider.getTileSource());
-				if(isChecked){
-					archiveTileSource.setOnlineBackground(defaultOnlineBackgroundTileSource);
-					Toast.makeText(getActivity(), R.string.no_online_background_when_offline_warning, Toast.LENGTH_LONG).show();
-				} else {
-					archiveTileSource.removeOnlineBackground();
-				}
+				selectedArchives.remove(archiveFiles[which]);
 			}
 			onChangeSelectedArchives();
 		}

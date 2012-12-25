@@ -30,16 +30,4 @@ public class ArchiveTileSource extends TileSourceAdaptor{
         archiveInfos.clear();
     }
 
-	public void setOnlineBackground(ITileSource iTileSource) {
-		this.onlineBackground = iTileSource;
-	}
-	public void removeOnlineBackground() {
-		this.onlineBackground = null;
-	}
-
-	public ITileSource getOnlineBackground() {
-		return onlineBackground;
-	}
-	
-	
 }

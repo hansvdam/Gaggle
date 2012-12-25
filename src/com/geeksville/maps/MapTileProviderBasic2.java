@@ -168,10 +168,9 @@ public class MapTileProviderBasic2 extends MapTileProviderArray implements IMapT
 			MapTileEnlarger mapTileEnlargeMentProvider = entry.getValue();
 			mTileProviderList.add(mapTileEnlargeMentProvider);
 		}
-		ITileSource onlineBackground = archiveTileSource.getOnlineBackground(); 
-		if(onlineBackground!=null){
-			registerDownloadTileSource(registerReceiver, onlineBackground);
-		}
+		Entry<MapTileFilesystemProvider, MapTileEnlarger> enlargementProviders = registerSdTilesource(registerReceiver, Environment.getExternalStorageDirectory() + osmdroidTilesLocation, "world.mbtiles", 5);
+		mTileProviderList.add(enlargementProviders.getKey());
+		mTileProviderList.add(enlargementProviders.getValue());
 	}
 
     private void registerDownloadTileSource(final IRegisterReceiver pRegisterReceiver, ITileSource tileSource) {
@@ -192,7 +191,7 @@ public class MapTileProviderBasic2 extends MapTileProviderArray implements IMapT
         String secondLevelFilePath = tileDir + archiveFileName;
         File archiveFile = new File(secondLevelFilePath);
         MBTilesFileArchive fileArchive = null;
-        if (new File(secondLevelFilePath).exists()) {
+        if (archiveFile.exists()) {
             fileArchive = addArchiveFile(pRegisterReceiver, archiveFile, maxZoomLevel2, fileSystemSubdirName);
         }
 
