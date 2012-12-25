@@ -163,10 +163,17 @@ public class AbstractGeeksvilleMapFragment extends Fragment implements LifeCycle
         if (tileSource instanceof ArchiveTileSource) {
             ArchiveTileSource archiveTileSource = (ArchiveTileSource) tileSource;
             archiveTileSource.clearArchiveInfos();
-            Set<String> achiveNames = GagglePrefs.getInstance().getSelectedArchiveFileNames();
-            for (String archiveName : achiveNames) {
+            Set<String> archiveNames = GagglePrefs.getInstance().getSelectedArchiveFileNames();
+            Set<String> toBeRemoved = new HashSet<String>();
+            for (String archiveName : archiveNames) {
+                String filePath = Environment.getExternalStorageDirectory() + MapTileProviderBasic2.osmdroidTilesLocation + archiveName;
+                if(new File(filePath).exists()){
                 archiveTileSource.addArchiveInfo(MapTileProviderBasic2.makeMBTilesArchiveInfo(archiveName, true));
+                } else {
+					toBeRemoved.add(archiveName);
+                }
             }
+            archiveNames.removeAll(toBeRemoved);
         }
         
         tileProvider.setTileSource(tileSource);
@@ -392,7 +399,10 @@ public class AbstractGeeksvilleMapFragment extends Fragment implements LifeCycle
             }
             for (String fileName : selectedArchives) {
                 if (!isContainedIn(infos, fileName)) {
+                    String filePath = Environment.getExternalStorageDirectory() + MapTileProviderBasic2.osmdroidTilesLocation + fileName;
+                    if(new File(filePath).exists()){
                     infos.add(MapTileProviderBasic2.makeMBTilesArchiveInfo(fileName, false));
+                    } 
                 }
             }
         }

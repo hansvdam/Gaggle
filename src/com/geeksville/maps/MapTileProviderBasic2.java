@@ -156,7 +156,9 @@ public class MapTileProviderBasic2 extends MapTileProviderArray implements IMapT
 		// first all archives need to bee checked to find a tile.
 		for (ArchiveInfo archiveInfo : archiveFileNames) {
 		    Entry<MapTileFilesystemProvider, MapTileEnlarger> enlargementProviders = registerSdTilesource(registerReceiver, Environment.getExternalStorageDirectory() + osmdroidTilesLocation, archiveInfo.getFileName(), archiveInfo.getMaxZoomLevel());
-		    enlargementProviderList.add(enlargementProviders);
+			if (enlargementProviders != null) {
+				enlargementProviderList.add(enlargementProviders);
+			}
 		}
 		// then the filesystems in which enlargements are stored are searched  
 		for (Entry<MapTileFilesystemProvider, MapTileEnlarger> entry : enlargementProviderList) {
@@ -168,7 +170,7 @@ public class MapTileProviderBasic2 extends MapTileProviderArray implements IMapT
 			MapTileEnlarger mapTileEnlargeMentProvider = entry.getValue();
 			mTileProviderList.add(mapTileEnlargeMentProvider);
 		}
-		Entry<MapTileFilesystemProvider, MapTileEnlarger> enlargementProviders = registerSdTilesource(registerReceiver, Environment.getExternalStorageDirectory() + osmdroidTilesLocation, "world.mbtiles", 5);
+		Entry<MapTileFilesystemProvider, MapTileEnlarger> enlargementProviders = registerSdTilesource(registerReceiver, context.getFilesDir().getAbsolutePath() + "/", "world.mbtiles", 5);
 		mTileProviderList.add(enlargementProviders.getKey());
 		mTileProviderList.add(enlargementProviders.getValue());
 	}
@@ -193,6 +195,8 @@ public class MapTileProviderBasic2 extends MapTileProviderArray implements IMapT
         MBTilesFileArchive fileArchive = null;
         if (archiveFile.exists()) {
             fileArchive = addArchiveFile(pRegisterReceiver, archiveFile, maxZoomLevel2, fileSystemSubdirName);
+        } else {
+        	return null;
         }
 
         // THIRD provider: saved blown up tiles:
